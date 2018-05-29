@@ -1,5 +1,6 @@
 package Algorithms.Graphs;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
@@ -17,18 +18,29 @@ public class Main {
 //        }
 
 
-        var floyd = new FloydWarshall(graphSize);
+//        var floyd = new FloydWarshall(graphSize);
+//        var edges = in.nextInt();
+//        for (var i = 0; i < edges; i++) {
+//            floyd.addEdge(in.nextInt(), in.nextInt(), in.nextInt());
+//        }
+//        var answer = floyd.floydWarshall();
+//        for (var anAnswer : answer) {
+//            for (var j = 0; j < answer.length; j++) {
+//                if (anAnswer[j] == Integer.MAX_VALUE) System.out.print("INF ");
+//                else System.out.printf("%d ", anAnswer[j]);
+//            }
+//            System.out.println();
+//        }
+
+
+        var kruskal = new Kruskal(graphSize);
         var edges = in.nextInt();
         for (var i = 0; i < edges; i++) {
-            floyd.addEdge(in.nextInt(), in.nextInt(), in.nextInt());
+            kruskal.addEdge(in.nextInt(), in.nextInt(), in.nextInt());
         }
-        var answer = floyd.floydWarshall();
-        for (var anAnswer : answer) {
-            for (var j = 0; j < answer.length; j++) {
-                if (anAnswer[j] == Integer.MAX_VALUE) System.out.print("INF ");
-                else System.out.printf("%d ", anAnswer[j]);
-            }
-            System.out.println();
+        var tree = kruskal.kruskal();
+        while(!tree.isEmpty()){
+            System.out.printf("%s\n", Arrays.toString(tree.poll()));
         }
     }
 }
