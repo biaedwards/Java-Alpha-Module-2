@@ -1,5 +1,8 @@
 package Judge;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class UnitsOfWork {
@@ -7,9 +10,9 @@ public class UnitsOfWork {
     static final Comparator<Unit> cmp = Comparator.comparingInt(Unit::getAttack).reversed().thenComparing(Unit::getName);
     static PriorityQueue<Unit> pq = new PriorityQueue<>(cmp);
 
-    public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
-        while(parse(in.nextLine().split(" ")));
+    public static void main(String[] args) throws IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        while (parse(in.readLine().split(" "))) ;
     }
 
     static void addUnit(String name, String type, int attack) {
@@ -28,8 +31,8 @@ public class UnitsOfWork {
             System.out.printf("FAIL: %s could not be found!\n", name);
         } else {
             units.remove(name);
-            for(Unit unit:pq){
-                if(unit.name.equals(name)){
+            for (Unit unit : pq) {
+                if (unit.name.equals(name)) {
                     pq.remove(unit);
                     break;
                 }
@@ -38,30 +41,32 @@ public class UnitsOfWork {
         }
     }
 
-    static void findType(String type){
+    static void findType(String type) {
         System.out.print("RESULT: ");
-        StringBuilder out = new StringBuilder();
         PriorityQueue<Unit> pqCopy = new PriorityQueue<>(pq);
-        while(!pqCopy.isEmpty()){
+        while (!pqCopy.isEmpty()) {
             Unit temp = pqCopy.poll();
-            if(!temp.type.equals(type)) continue;
-            out.append(String.format("%s, ", temp));
+            if (temp.type.equals(type)){
+                System.out.print(temp);
+                if (!pqCopy.isEmpty()) {
+                    System.out.print(", ");
+                }
+            }
         }
-        if(out.length()==0) return;
-        out.delete(out.length()-2, out.length());
-        System.out.println(out);
+        System.out.println();
     }
 
-    static void power(int number){
+    static void power(int number) {
         System.out.print("RESULT: ");
-        StringBuilder out = new StringBuilder();
         PriorityQueue<Unit> pqCopy = new PriorityQueue<>(pq);
-        while(number>0&&!pqCopy.isEmpty()){
-            out.append(String.format("%s, ", pqCopy.poll()));
+        while (number > 0 && !pqCopy.isEmpty()) {
             --number;
+            System.out.print(pqCopy.poll());
+            if (!pqCopy.isEmpty()) {
+                System.out.print(", ");
+            }
         }
-        out.delete(out.length()-2, out.length());
-        System.out.println(out);
+        System.out.println();
     }
 
     static boolean parse(String[] input) {
@@ -72,11 +77,14 @@ public class UnitsOfWork {
             case "remove":
                 removeUnit(input[1]);
                 break;
-            case "find": findType(input[1]);
+            case "find":
+                findType(input[1]);
                 break;
-            case "power": power(Integer.parseInt(input[1]));
+            case "power":
+                power(Integer.parseInt(input[1]));
                 break;
-            case "end": return false;
+            case "end":
+                return false;
         }
         return true;
     }
@@ -105,7 +113,7 @@ public class UnitsOfWork {
         }
 
         @Override
-        public String toString(){
+        public String toString() {
             return String.format("%s[%s](%d)", name, type, attack);
         }
     }
