@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class UnitsOfWork {
     private static HashMap<String, Unit> units = new HashMap<>();
@@ -20,13 +21,10 @@ public class UnitsOfWork {
         } else {
             Unit temp = new Unit(name, type, attack);
             units.put(name, temp);
-            if (types.containsKey(type)) {
-                types.get(type).add(temp);
-            } else {
-                HashSet<Unit> hs = new HashSet<>();
-                hs.add(temp);
-                types.put(type, hs);
+            if (!types.containsKey(type)) {
+                types.put(type, new HashSet<>());
             }
+            types.get(type).add(temp);
             System.out.printf("SUCCESS: %s added!\n", name);
         }
     }
@@ -44,35 +42,29 @@ public class UnitsOfWork {
 
     private static void findType(String type) {
         System.out.print("RESULT: ");
-        StringBuilder sb = new StringBuilder();
-        if(!types.containsKey(type)){
+        if (!types.containsKey(type)) {
             System.out.println();
             return;
         }
-        types.get(type).stream()
+        String s = types.get(type).stream()
                 .sorted()
-                .forEach(x -> sb.append(x).append(", "));
-        if (sb.length() != 0) {
-            sb.delete(sb.length() - 2, sb.length());
-            System.out.println(sb);
-        } else System.out.println();
+                .map(Unit::toString)
+                .collect(Collectors.joining(", "));
+        System.out.println(s);
     }
 
     private static void power(int number) {
         System.out.print("RESULT: ");
-        if(units.isEmpty()){
+        if (units.isEmpty()) {
             System.out.println();
             return;
         }
-        StringBuilder sb = new StringBuilder();
-        units.values().stream()
+        String s = units.values().stream()
                 .sorted()
                 .limit(number)
-                .forEach(x -> sb.append(x).append(", "));
-        if (sb.length() != 0) {
-            sb.delete(sb.length() - 2, sb.length());
-            System.out.println(sb);
-        } else System.out.println();
+                .map(Unit::toString)
+                .collect(Collectors.joining(", "));
+        System.out.println(s);
     }
 
     private static boolean parse(String[] input) {
@@ -95,7 +87,7 @@ public class UnitsOfWork {
         return true;
     }
 
-    static class Unit implements Comparable{
+    static class Unit implements Comparable {
         private String name;
         private String type;
         private int attack;
@@ -126,7 +118,7 @@ public class UnitsOfWork {
         @Override
         public int compareTo(Object o) {
             Unit unit = (Unit) o;
-            if(Integer.compare(this.attack, unit.attack)!=0) return -Integer.compare(this.attack, unit.attack);
+            if (Integer.compare(this.attack, unit.attack) != 0) return -Integer.compare(this.attack, unit.attack);
             return this.name.compareTo(unit.name);
         }
     }
