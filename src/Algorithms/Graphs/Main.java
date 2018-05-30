@@ -33,14 +33,22 @@ public class Main {
 //        }
 
 
-        var kruskal = new Kruskal(graphSize);
+//        var kruskal = new Kruskal(graphSize);
+//        var edges = in.nextInt();
+//        for (var i = 0; i < edges; i++) {
+//            kruskal.addEdge(in.nextInt(), in.nextInt(), in.nextInt());
+//        }
+//        var tree = kruskal.kruskal();
+//        while(!tree.isEmpty()){
+//            System.out.printf("%s\n", Arrays.toString(tree.poll()));
+//        }
+
+
+        var prim = new Prim(graphSize);
         var edges = in.nextInt();
         for (var i = 0; i < edges; i++) {
-            kruskal.addEdge(in.nextInt(), in.nextInt(), in.nextInt());
+            prim.addEdge(in.nextInt(), in.nextInt(), in.nextInt());
         }
-        var tree = kruskal.kruskal();
-        while(!tree.isEmpty()){
-            System.out.printf("%s\n", Arrays.toString(tree.poll()));
-        }
+        System.out.println(prim.prim());
     }
 }
