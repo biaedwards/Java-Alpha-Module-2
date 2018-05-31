@@ -1,90 +1,241 @@
 package Judge;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class UnitsOfWork {
+    static class InputReader {
+
+        private InputStream stream;
+        private byte[] buf = new byte[1024];
+        private int curChar;
+        private int numChars;
+
+        InputReader() {
+            this.stream = System.in;
+        }
+
+        int read() {
+            if (numChars == -1)
+                throw new InputMismatchException();
+            if (curChar >= numChars) {
+                curChar = 0;
+                try {
+                    numChars = stream.read(buf);
+                } catch (IOException e) {
+                    throw new InputMismatchException();
+                }
+                if (numChars <= 0)
+                    return -1;
+            }
+            return buf[curChar++];
+        }
+
+        int readInt() {
+            int c = read();
+            while (isSpaceChar(c)) {
+                c = read();
+            }
+            int sgn = 1;
+            if (c == '-') {
+                sgn = -1;
+                c = read();
+            }
+            int res = 0;
+            do {
+                if (c < '0' || c > '9') {
+                    throw new InputMismatchException();
+                }
+                res *= 10;
+                res += c - '0';
+                c = read();
+            } while (!isSpaceChar(c));
+            return res * sgn;
+        }
+
+        long readLong() {
+            int c = read();
+            while (isSpaceChar(c)) {
+                c = read();
+            }
+            int sgn = 1;
+            if (c == '-') {
+                sgn = -1;
+                c = read();
+            }
+            long res = 0;
+            do {
+                if (c < '0' || c > '9') {
+                    throw new InputMismatchException();
+                }
+                res *= 10;
+                res += c - '0';
+                c = read();
+            } while (!isSpaceChar(c));
+            return res * sgn;
+        }
+
+        double readDouble() {
+            int c = read();
+            while (isSpaceChar(c)) {
+                c = read();
+            }
+            int sgn = 1;
+            if (c == '-') {
+                sgn = -1;
+                c = read();
+            }
+            double res = 0;
+            while (!isSpaceChar(c) && c != '.' && c != ',') {
+                if (c == 'e' || c == 'E') {
+                    return res * Math.pow(10, readInt());
+                }
+                if (c < '0' || c > '9') {
+                    throw new InputMismatchException();
+                }
+                res *= 10;
+                res += c - '0';
+                c = read();
+            }
+            if (c == '.' || c == ',') {
+                c = read();
+                double m = 1;
+                while (!isSpaceChar(c)) {
+                    if (c == 'e' || c == 'E') {
+                        return res * Math.pow(10, readInt());
+                    }
+                    if (c < '0' || c > '9') {
+                        throw new InputMismatchException();
+                    }
+                    m /= 10;
+                    res += (c - '0') * m;
+                    c = read();
+                }
+            }
+            return res * sgn;
+        }
+
+        String readLine() {
+            int c = read();
+            while (isSpaceChar(c))
+                c = read();
+            StringBuilder res = new StringBuilder();
+            do {
+                res.appendCodePoint(c);
+                c = read();
+            } while (!isSpaceChar(c));
+            return res.toString();
+        }
+
+        boolean isSpaceChar(int c) {
+            return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == -1;
+        }
+    }
+    static class OutputWriter {
+        private final PrintWriter writer;
+
+        OutputWriter() {
+            writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
+        }
+
+        void print(Object... objects) {
+            for (int i = 0; i < objects.length; i++) {
+                if (i != 0)
+                    writer.print(' ');
+                writer.print(objects[i]);
+            }
+        }
+
+        void printLine(Object... objects) {
+            print(objects);
+            writer.println();
+        }
+
+        void close() {
+            writer.close();
+        }
+    }
+
     private static HashMap<String, Unit> units = new HashMap<>();
-    private static HashMap<String, HashSet<Unit>> types = new HashMap<>();
+    private static HashMap<String, TreeSet<Unit>> types = new HashMap<>();
+    private static TreeSet<Unit> allOrdered = new TreeSet<>();
+    private static InputReader in = new InputReader();
+    private static OutputWriter write = new OutputWriter();
 
     public static void main(String[] args) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        while (parse(in.readLine().split(" "))) ;
+        while (true) {
+            String input = in.readLine();
+            if (input.equals("add")) {
+                addUnit(in.readLine(), in.readLine(), in.readInt());
+            } else if (input.equals("remove")) {
+                removeUnit(in.readLine());
+            } else if (input.equals("find")) {
+                findType(in.readLine());
+            } else if (input.equals("power")) {
+                power(in.readInt());
+            } else if (input.equals("end")) {
+                write.close();
+                return;
+            }
+        }
     }
 
     private static void addUnit(String name, String type, int attack) {
         if (units.containsKey(name)) {
-            System.out.printf("FAIL: %s already exists!\n", name);
+            write.printLine("FAIL: " + name + " already exists!");
         } else {
             Unit temp = new Unit(name, type, attack);
             units.put(name, temp);
+            allOrdered.add(temp);
             if (!types.containsKey(type)) {
-                types.put(type, new HashSet<>());
+                types.put(type, new TreeSet<>());
             }
             types.get(type).add(temp);
-            System.out.printf("SUCCESS: %s added!\n", name);
+            write.printLine("SUCCESS: " + name + " added!");
         }
     }
 
     private static void removeUnit(String name) {
         if (!units.containsKey(name)) {
-            System.out.printf("FAIL: %s could not be found!\n", name);
+            write.printLine("FAIL: " + name + " could not be found!");
         } else {
             Unit temp = units.get(name);
-            units.remove(name);
+            allOrdered.remove(temp);
             types.get(temp.type).remove(temp);
-            System.out.printf("SUCCESS: %s removed!\n", name);
+            units.remove(name);
+            write.printLine("SUCCESS: " + name + " removed!");
         }
     }
 
     private static void findType(String type) {
-        System.out.print("RESULT: ");
+        write.print("RESULT: ");
         if (!types.containsKey(type)) {
-            System.out.println();
+            write.printLine();
             return;
         }
-        String s = types.get(type).stream()
-                .sorted()
-                .map(Unit::toString)
-                .collect(Collectors.joining(", "));
-        System.out.println(s);
+        int counter = 0;
+        for (Unit unit : types.get(type)) {
+            if(++counter==1) write.print(unit);
+            else write.print(", " + unit);
+        }
+        write.printLine();
     }
 
     private static void power(int number) {
-        System.out.print("RESULT: ");
-        if (units.isEmpty()) {
-            System.out.println();
+        write.print("RESULT: ");
+        if (allOrdered.isEmpty()) {
+            write.printLine();
             return;
         }
-        String s = units.values().stream()
-                .sorted()
-                .limit(number)
-                .map(Unit::toString)
-                .collect(Collectors.joining(", "));
-        System.out.println(s);
-    }
-
-    private static boolean parse(String[] input) {
-        switch (input[0]) {
-            case "add":
-                addUnit(input[1], input[2], Integer.parseInt(input[3]));
-                break;
-            case "remove":
-                removeUnit(input[1]);
-                break;
-            case "find":
-                findType(input[1]);
-                break;
-            case "power":
-                power(Integer.parseInt(input[1]));
-                break;
-            case "end":
-                return false;
+        if (number > allOrdered.size()) number = allOrdered.size();
+        ++number;
+        int counter = 0;
+        for (Unit unit : allOrdered) {
+            if (++counter==number) break;
+            if(counter==1) write.print(unit);
+            else write.print(", " + unit);
         }
-        return true;
+        write.printLine();
     }
 
     static class Unit implements Comparable {
