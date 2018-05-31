@@ -1,5 +1,5 @@
 //https://leetcode.com/problems/asteroid-collision/description/
-package LeetCode.Graphs;
+package LeetCode.LinearDataStructures;
 
 import java.util.Arrays;
 import java.util.LinkedList;
