@@ -52,5 +52,41 @@ public class LargestRectangleInHistogram {
             }
             return max;
         }
+
+        private int largestRectangleAreaRecursive(int[] heights){
+            if(heights.length==0) return 0;
+            return findMaxArea(heights, 0, heights.length);
+        }
+
+        private int findMaxArea(int[] heights, int start, int end){
+            if(start==end) return 0;
+
+            int index = findMinIndex(heights, start, end);
+
+            int left = 0;
+            if(start!=index){
+                left = findMaxArea(heights, start, index);
+            }
+            int current = heights[index]*(end-start);
+
+            int right = 0;
+            if(index!=end-1){
+                right = findMaxArea(heights, index+1, end);
+            }
+
+            return Math.max(left, Math.max(current, right));
+        }
+
+        private int findMinIndex(int[] heights, int start, int end){
+            int min = start;
+            for (int i = start+1; i < end; i++) {
+                if(heights[i]<heights[min]){
+                    min=i;
+                }
+            }
+            return min;
+        }
     }
+
+
 }
