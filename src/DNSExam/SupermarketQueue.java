@@ -185,17 +185,17 @@ public class SupermarketQueue {
     private static void append(String name) {
         queue.add(name);
         names.put(name, names.getOrDefault(name, 0)+1);
-        out.printLine(" OK");
+        out.printLine("OK");
     }
 
     private static void insert(int position, String name) {
         if(position>queue.size()){
-            out.printLine(" Error");
+            out.printLine("Error");
             return;
         }
         queue.add(position, name);
         names.put(name, names.getOrDefault(name, 0)+1);
-        out.printLine(" OK");
+        out.printLine("OK");
     }
 
     private static void find(String name) {
@@ -204,7 +204,7 @@ public class SupermarketQueue {
 
     private static void serve(int count) {
         if(count>queue.size()){
-            out.printLine(" Error");
+            out.printLine("Error");
             return;
         }
 
