@@ -1,4 +1,4 @@
-package DNSExam;
+package DNSExamMakeover;
 
 import java.io.*;
 import java.util.HashMap;
@@ -183,7 +183,7 @@ public class SupermarketQueue {
     }
 
     private static void append(String name) {
-        queue.add(name);
+        queue.push(name);
         names.put(name, names.getOrDefault(name, 0)+1);
         out.printLine("OK");
     }

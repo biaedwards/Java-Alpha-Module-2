@@ -1,4 +1,4 @@
-package DNSExam;
+package DNSExamMakeover;
 
 import java.util.HashMap;
 import java.util.Scanner;
