@@ -131,6 +131,7 @@ public class Cheaters {
             return c == '\n' || c == '\r' || c == '\t' || c == -1;
         }
     }
+
     static class OutputWriter {
         private final PrintWriter writer;
 
@@ -159,7 +160,8 @@ public class Cheaters {
     static OutputWriter out = new OutputWriter();
 
     static HashMap<String, HashMap<String, TreeSet<String>>> map = new HashMap<>();
-    static HashMap<String, HashSet<LinkedHashSet<String>>> found = new HashMap<>();
+    static ArrayList<LinkedHashSet<String>> results = new ArrayList<>();
+    static HashMap<String, HashMap<String, Integer>> search = new HashMap<>();
 
 
     public static void main(String[] args) {
@@ -169,14 +171,14 @@ public class Cheaters {
         for (int i = 0; i < num; i++) {
             String input = in.readLine();
             int index1 = input.indexOf(" ");
-            int index2 = input.substring(index1+1).indexOf(" ")+index1+1;
+            int index2 = input.substring(index1 + 1).indexOf(" ") + index1 + 1;
 
-            String subject = input.substring(index2+1);
+            String subject = input.substring(index2 + 1);
             String person = input.substring(0, index1);
 
             if (!map.containsKey(subject)) map.put(subject, new HashMap<>());
             if (!map.get(subject).containsKey(person)) map.get(subject).put(person, new TreeSet<>());
-            map.get(subject).get(person).add(input.substring(index1+1, index2));
+            map.get(subject).get(person).add(input.substring(index1 + 1, index2));
         }
 
         num = in.readInt();
@@ -190,7 +192,7 @@ public class Cheaters {
         }
 
         for (int i = 0; i < num; i++) {
-            if(!isFound(tasks[i][0], tasks[i][1])) findDependencies(tasks[i][0], tasks[i][1]);
+            if (!isFound(tasks[i][0], tasks[i][1])) findDependencies(tasks[i][0], tasks[i][1]);
         }
 
         out.close();
@@ -201,39 +203,40 @@ public class Cheaters {
         fillSet(person, map.get(subject), order);
         order.add(person);
 
-        if(!found.containsKey(subject)) found.put(subject, new HashSet<LinkedHashSet<String>>());
-        found.get(subject).add(order);
+        int index = results.size();
+        results.add(order);
+        if (!search.containsKey(subject)) search.put(subject, new HashMap<>());
 
-        for(String name:order){
-            if(name==person) out.printLine(person);
-            else out.print(name+", ");
+
+        for (String name : order) {
+            search.get(subject).put(name, index);
+            if (name == person) out.printLine(person);
+            else out.print(name + ", ");
         }
     }
 
-    private static boolean isFound(String person, String subject){
-        if(!found.containsKey(subject)) return false;
+    private static boolean isFound(String person, String subject) {
+        if (!search.containsKey(subject) || !search.get(subject).containsKey(person)) return false;
 
-        for(LinkedHashSet<String> hs:found.get(subject)){
-            if(hs.contains(person)){
-                for (String name:hs){
-                    if(!name.equals(person)) out.print(name+", ");
-                    else{
-                        out.printLine(person);
-                        return true;
-                    }
-                }
+        int index = search.get(subject).get(person);
+
+        for (String name : results.get(index)) {
+            if (!name.equals(person)) out.print(name + ", ");
+            else {
+                out.printLine(person);
+                return true;
             }
         }
 
         return false;
     }
 
-    private static void fillSet(String person, HashMap<String, TreeSet<String>> m, LinkedHashSet<String> order){
-        if(!m.containsKey(person)){
+    private static void fillSet(String person, HashMap<String, TreeSet<String>> m, LinkedHashSet<String> order) {
+        if (!m.containsKey(person)) {
             return;
         }
 
-        for(String s:m.get(person)){
+        for (String s : m.get(person)) {
             fillSet(s, m, order);
         }
 
