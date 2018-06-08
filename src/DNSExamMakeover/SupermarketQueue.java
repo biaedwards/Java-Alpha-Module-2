@@ -1,6 +1,7 @@
 package DNSExamMakeover;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.LinkedList;
@@ -161,8 +162,9 @@ public class SupermarketQueue {
     static InputReader in = new InputReader();
     static OutputWriter out = new OutputWriter();
 
-    static LinkedList<String> queue = new LinkedList<>();
+    static ArrayList<String> queue = new ArrayList<>();
     static HashMap<String, Integer> names = new HashMap<>();
+    static int start = 0;
 
     public static void main(String[] args) {
         while (true) {
@@ -183,17 +185,17 @@ public class SupermarketQueue {
     }
 
     private static void append(String name) {
-        queue.push(name);
+        queue.add(name);
         names.put(name, names.getOrDefault(name, 0)+1);
         out.printLine("OK");
     }
 
     private static void insert(int position, String name) {
-        if(position>queue.size()){
+        if(position>queue.size()-start){
             out.printLine("Error");
             return;
         }
-        queue.add(position, name);
+        queue.add(position+start, name);
         names.put(name, names.getOrDefault(name, 0)+1);
         out.printLine("OK");
     }
@@ -203,16 +205,18 @@ public class SupermarketQueue {
     }
 
     private static void serve(int count) {
-        if(count>queue.size()){
+        if(count>queue.size()-start){
             out.printLine("Error");
             return;
         }
 
-        for (int i = 0; i < count; i++) {
-            String name = queue.pollFirst();
+        for (int i = start; i < start+count; i++) {
+            String name = queue.get(i);
             names.put(name, names.get(name)-1);
             out.print(name+" ");
         }
+
+        start+=count;
         out.printLine();
     }
 }
