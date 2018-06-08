@@ -6,8 +6,8 @@ public class Subsequence {
     public static void main(String[] args){
         Scanner in = new Scanner(System.in);
 
-        String first = in.nextLine().toUpperCase();
-        String second = in.nextLine().toUpperCase();
+        String first = in.nextLine();
+        String second = in.nextLine();
 
         int s = 0;
         int f = 0;
