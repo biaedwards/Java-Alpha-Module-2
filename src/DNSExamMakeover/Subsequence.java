@@ -3,31 +3,31 @@ package DNSExamMakeover;
 import java.util.Scanner;
 
 public class Subsequence {
-    public static void main(String[] args) {
+    public static void main(String[] args){
         Scanner in = new Scanner(System.in);
 
         String first = in.nextLine().toUpperCase();
         String second = in.nextLine().toUpperCase();
 
-        System.out.println(isSubsequence(first, second) ? "true" : "false");
-    }
-
-    private static boolean isSubsequence(String first, String second) {
-        int f = 0;
         int s = 0;
+        int f = 0;
 
-        if (first.length() > second.length()) return false;
-        while (f < first.length()) {
-            while (s < second.length() && second.charAt(s) != first.charAt(f)) s++;
-            if (s < second.length()) {
-                f++;
-                s++;
-            } else {
-                break;
+        while(f<second.length()){
+            char c = first.charAt(s);
+            if(c==' '){
+                ++s;
+                continue;
+            }
+            while(f<second.length()&&second.charAt(f)!=c)++f;
+            if(f!=second.length()){
+                ++s;
+                ++f;
+                if(s==first.length()) break;
             }
         }
-        if (f == first.length()) return true;
-        else return false;
+
+        if(s==first.length()) System.out.println("true");
+        else System.out.println("false");
     }
 }
 
